@@ -5,6 +5,7 @@ import string  # pylint: disable=deprecated-module
 import typing as t
 import uuid
 from abc import ABCMeta, abstractmethod
+import logging
 
 import jwt  # type: ignore
 import requests
@@ -290,6 +291,7 @@ class MessageLaunch(t.Generic[REQ, TCONF, SES, COOK]):
                 .validate_message()\
                 .save_launch_data()
         except Exception:
+            logging.exception("launch validation failed")
             self._validated = False
             raise
 
@@ -661,37 +663,46 @@ class MessageLaunch(t.Generic[REQ, TCONF, SES, COOK]):
         if client_id != self._registration.get_client_id():
             raise LtiException("Client id not registered for this issuer")
 
+        logging.debug("validate_registration. Success!")
         return self
 
     def validate_jwt_signature(self):
         # type: (T_SELF) -> T_SELF
+        logging.debug("validate_jwt_signature. Going to call self._get_id_token()")
         id_token = self._get_id_token()
 
         # Fetch public key.
+        logging.debug("validate_jwt_signature. Fetching public key")
         public_key = self.get_public_key()
 
         try:
+            logging.debug("validate_jwt_signature. Decoding the id token")
             jwt.decode(id_token, public_key, algorithms=['RS256'], options=self._jwt_verify_options)
         except jwt.InvalidTokenError as e:
+            logging.exception("validate_jwt_signature. Failed to decode the id token")
             raise LtiException("Can't decode id_token: " + str(e))
-
+        logging.debug("validate_jwt_signature. Success!")
         return self
 
     def validate_deployment(self):
         # type: (T_SELF) -> T_SELF
+        logging.debug("validate_deployment. Getting the issuer..")
         iss = self.get_iss()
+        logging.debug("validate_deployment. Getting the client id..")
         client_id = self.get_client_id()
+        logging.debug("validate_deployment. Getting the deployment id..")
         deployment_id = self._get_deployment_id()
         tool_config = self._tool_config  # type: ToolConfAbstract
 
         # Find deployment.
+        logging.debug("validate_deployment. Going to try find the deployment..")
         if tool_config.check_iss_has_one_client(iss):
             deployment = tool_config.find_deployment(iss, deployment_id)
         else:
             deployment = tool_config.find_deployment_by_params(iss, deployment_id, client_id)
         if not deployment:
             raise LtiException("Unable to find deployment")
-
+        logging.debug("validate_deployment. Success!")
         return self
 
     def validate_message(self):
@@ -701,6 +712,7 @@ class MessageLaunch(t.Generic[REQ, TCONF, SES, COOK]):
         if not message_type:
             raise LtiException("Invalid message type")
 
+        logging.debug("validate_message. Going to get validators")
         validators = get_validators()
         validated = False
         for validator in validators:
@@ -715,6 +727,7 @@ class MessageLaunch(t.Generic[REQ, TCONF, SES, COOK]):
         if not validated:
             raise LtiException("Unrecognized message type")
 
+        logging.debug("validate_message. Success!")
         return self
 
     def set_launch_data_storage(self, data_storage):
@@ -739,8 +752,11 @@ class MessageLaunch(t.Generic[REQ, TCONF, SES, COOK]):
         state_from_request = self._get_request_param('state')
         id_token_hash = self._get_id_token_hash()
 
+        logging.debug("save_launch_data. Saving the launch data")
         self._session_service.save_launch_data(self._launch_id, self._jwt['body'])
+        logging.debug("save_launch_data. Setting the state valid")
         self._session_service.set_state_valid(state_from_request, id_token_hash)
+        logging.debug("save_launch_data. Done")
         return self
 
     def get_params_from_login(self):
