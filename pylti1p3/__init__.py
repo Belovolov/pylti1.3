@@ -1,1 +1,1 @@
-__version__ = '1.11.0-Belovolov'
+__version__ = '1.11.0'
