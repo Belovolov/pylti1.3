@@ -16,6 +16,8 @@ jobs:
       - run: pip install --upgrade pip
       - run: pip install pylint==2.8.1 "tox<4"
       - run: tox -e py
+  publish:
+    steps:
       - name: Publish to PyPi
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@release/v1
