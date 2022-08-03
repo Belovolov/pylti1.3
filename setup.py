@@ -26,17 +26,17 @@ with open("README.rst", "rt") as readme:
 packages = find_packages(exclude=["examples", "tests"])
 
 setup(
-    name='PyLTI1p3',
+    name='PyLTI1p3-Belovolov',
     version=__version__,
-    description='LTI 1.3 Advantage Tool implementation in Python',
+    description='LTI 1.3 Advantage Tool implementation in Python with extra logging to debug an issue in prod',
     keywords="pylti,pylti1p3,lti,lti1.3,lti1p3,django,flask",
-    author='Dmitry Viskov',
-    author_email='dmitry.viskov@webenterprise.ru',
-    maintainer="Dmitry Viskov",
+    author='Roman Belovolov',
+    author_email='belovolovri@gmail.com',
+    maintainer="Roman Belovolov",
     long_description=long_description,
     install_requires=install_requires,
     license='MIT',
-    url='https://github.com/dmitry-viskov/pylti1.3',
+    url='https://github.com/Belovolov/pylti1.3',
     packages=packages,
     zip_safe=False,
     include_package_data=True,
