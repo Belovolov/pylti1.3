@@ -1,7 +1,7 @@
+from bleach import clean
 from django.http import HttpResponse  # type: ignore
 from django.shortcuts import redirect  # type: ignore
 from pylti1p3.redirect import Redirect
-from bleach import clean
 
 
 class DjangoRedirect(Redirect):
