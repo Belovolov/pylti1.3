@@ -1,6 +1,7 @@
 from django.http import HttpResponse  # type: ignore
 from django.shortcuts import redirect  # type: ignore
 from pylti1p3.redirect import Redirect
+from bleach import clean
 
 
 class DjangoRedirect(Redirect):
@@ -16,8 +17,9 @@ class DjangoRedirect(Redirect):
         return self._process_response(redirect(self._location))
 
     def do_js_redirect(self):
+        location_sanitized = clean(self._location)
         return self._process_response(
-            HttpResponse('<script type="text/javascript">window.location="%s";</script>' % self._location))
+            HttpResponse('<script type="text/javascript">window.location="%s";</script>' % location_sanitized))
 
     def set_redirect_url(self, location):
         self._location = location

@@ -2,6 +2,7 @@ import sys
 import time
 import typing as t
 import uuid
+from bleach import clean
 
 import jwt  # type: ignore
 
@@ -79,10 +80,11 @@ class DeepLink(object):
 
     def get_response_form_html(self, jwt_val):
         # type: (str) -> str
+        deep_link_return_url_sanitized = clean(self._deep_link_settings['deep_link_return_url'])
         html = '<form id="lti13_deep_link_auto_submit" action="%s" method="POST">' \
                '<input type="hidden" name="JWT" value="%s" /></form>' \
                '<script type="text/javascript">document.getElementById(\'lti13_deep_link_auto_submit\').submit();' \
-               '</script>' % (self._deep_link_settings['deep_link_return_url'], jwt_val)
+               '</script>' % (deep_link_return_url_sanitized, jwt_val)
         return html
 
     def output_response_form(self, resources):

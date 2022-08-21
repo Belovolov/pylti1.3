@@ -1,4 +1,5 @@
 from flask import make_response, redirect
+from bleach import clean
 
 from pylti1p3.redirect import Redirect
 
@@ -16,9 +17,10 @@ class FlaskRedirect(Redirect):
         return self._process_response(redirect(self._location))
 
     def do_js_redirect(self):
+        location_sanitized = clean(self._location)
         return self._process_response(
             make_response('<script type="text/javascript">window.location="{}";'
-                          '</script>'.format(self._location))
+                          '</script>'.format(location_sanitized))
         )
 
     def set_redirect_url(self, location):
