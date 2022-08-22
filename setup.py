@@ -17,8 +17,8 @@ install_requires = [
     'jwcrypto==0.9.1; python_version>="2" and python_version<"3"',
     'jwcrypto; python_version>="3"',
     'requests',
-    'typing; python_version<"3.5"',
-    'bleach'
+    'bleach',
+    'typing; python_version<"3.5"'
 ]
 
 with open("README.rst", "rt") as readme:
