@@ -85,7 +85,7 @@ class CookiesAllowedCheckPage(object):
 
         document.addEventListener("DOMContentLoaded", checkCookiesAllowed);
         """
-        sanitized_params = {k: clean(v) for k,v in self._params.items()}
+        sanitized_params = {k: clean(v) for k, v in self._params.items()}
         js_block = js_block % (self._protocol, json.dumps(sanitized_params))
         return js_block
 
